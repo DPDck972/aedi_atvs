@@ -125,12 +125,65 @@ func (lista *DoubleLinkedList) push_front(e float32) {
 	lista.elementos++
 }
 
+// Função adicionar em um index especifico
+func (lista *ArrayList) addOnIndex(index int, e float32) error {
+	if index < 0 || index >= lista.elementos {
+		return errors.New(fmt.Sprintf("Index inválido: %d", index))
+	}
+	if lista.elementos == len(lista.array) {
+		lista.extend(2)
+	}
+	for i := lista.elementos; i > index; i-- {
+		lista.array[i] = lista.array[i-1]
+	}
+	lista.array[index] = e
+	lista.elementos++
+	return nil
+}
+
+func (lista *DoubleLinkedList) addOnIndex(index int, e float32) error {
+	if index < 0 || index >= lista.elementos {
+		return errors.New(fmt.Sprintf("Index inválido: %d", index))
+	}
+	novo_noh := &Noh{valor: e, next: nil, previous: nil}
+	var aux *Noh
+	if index == 0 {
+		novo_noh.next = lista.head
+		lista.head.previous = novo_noh
+
+	} else if index < (lista.elementos / 2) {
+		aux = lista.head
+		for i := 0; i <= index; i++ {
+			if aux.next == nil {
+				return fmt.Errorf("Erro ao acessar a lista")
+			}
+			aux = aux.next
+		}
+		novo_noh.next = aux.next
+		novo_noh.previous = aux
+		aux.next = novo_noh
+	} else {
+		aux = lista.tail
+		for i := lista.elementos; i >= index; i++ {
+			if aux.previous == nil {
+				return fmt.Errorf("Erro ao acessar a lista")
+			}
+			aux = aux.previous
+		}
+		novo_noh.previous = aux.previous
+		novo_noh.next = aux
+		aux.previous = novo_noh
+	}
+	lista.elementos++
+	return nil
+}
+
 func main() {
 	dll := &DoubleLinkedList{}
 	for i := 1; i <= 50; i++ {
 		dll.push_back(float32(i))
 	}
-	val, erro := dll.get(11)
+	val, erro := dll.get(0)
 	if erro != nil {
 		fmt.Println("Erro:", erro)
 	}
